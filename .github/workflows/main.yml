@@ -1,0 +1,56 @@
+name: docker-hub-push
+
+on: 
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with: 
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: rushikeshghodkedottech/node-app:latest
+          
+        
+  # deploy:
+  #   needs: build
+  #   runs-on: self-hosted
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #     - name: Pull latest image from Docker Hub
+  #       run: docker pull rushikeshghodkedottech/contant-app-backend:latest
+        
+  #     - name: Stop existing container
+  #       run: docker stop contant-app-backend || true
+        
+  #     - name: Remove existing container
+  #       run: docker rm contant-app-backend || true
+        
+  #     - name: Run new Docker container
+  #       run: |
+  #         docker run -d \
+  #           -p 3000:3000 \
+  #           --name node-app \
+  #           --restart unless-stopped \
+  #           rushikeshghodkedottech/contant-app-backend:latest
+            
+  #     - name: Clean up unused images
+  #       run: docker image prune -f
