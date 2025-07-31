@@ -44,11 +44,11 @@ jobs:
         
       - name: Run new Docker container
         run: |
-          docker run -d \
-            -p 3000:3000 \
-            --name contact-app-backend \
-            --restart unless-stopped \
-            rushikeshghodkedottech/contact-app-backend:latest
+          docker run -d -p 3000:3000 \
+          --network three-tier -e DB_PORT=3306 \
+          -e DB_HOST=mysql -e DB_USER=root -e DB_PASSWORD=rootpass \
+          -e DB_NAME=contacts_db --name contact-app-backend \
+          rushikeshghodkedottech/contact-app-backend
             
       - name: Clean up unused images
         run: docker image prune -f
